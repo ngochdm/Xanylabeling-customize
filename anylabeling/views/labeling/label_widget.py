@@ -1300,8 +1300,7 @@ class LabelingWidget(LabelDialog):
             zoom_out=zoom_out,
             zoom_org=zoom_org,
             keep_prev_scale=keep_prev_scale,
-            # MARK: ngochdm 
-            keep_zoom_position=keep_zoom_position,
+            keep_zoom_position=keep_zoom_position,      # MARK: ngochdm 
             keep_prev_brightness=keep_prev_brightness,
             keep_prev_contrast=keep_prev_contrast,
             fit_window=fit_window,
@@ -1528,8 +1527,7 @@ class LabelingWidget(LabelDialog):
                 zoom_org,
                 None,
                 keep_prev_scale,
-                # MARK: ngochdm 
-                keep_zoom_position,
+                keep_zoom_position,         # MARK: ngochdm 
                 keep_prev_brightness,
                 keep_prev_contrast,
                 None,
@@ -3614,12 +3612,6 @@ class LabelingWidget(LabelDialog):
             self.set_zoom(self.zoom_values[self.filename][1])
         elif is_initial_load or not self._config["keep_prev_scale"]:
             self.adjust_scale(initial=True)
-        # # set scroll values
-        # for orientation in self.scroll_values:
-        #     if self.filename in self.scroll_values[orientation]:
-        #         self.set_scroll(
-        #             orientation, self.scroll_values[orientation][self.filename]
-        #         )
         # MARK: ngochdm 
         # set scroll values
         if self._config["keep_zoom_position"]:
@@ -3628,8 +3620,7 @@ class LabelingWidget(LabelDialog):
             for orientation in self.scroll_values:
                 if self.filename in self.scroll_values[orientation]:
                     self.set_scroll(
-                        orientation,
-                        self.scroll_values[orientation][self.filename],
+                        orientation, self.scroll_values[orientation][self.filename],
                     )
         # set brightness contrast values
         dialog = BrightnessContrastDialog(
