@@ -725,8 +725,15 @@ class LabelingWidget(LabelDialog):
             enabled=False,
         )
 
-        zoom = QtWidgets.QWidgetAction(self)
-        zoom.setDefaultWidget(self.zoom_widget)
+        # zoom = QtWidgets.QWidgetAction(self)
+        # zoom.setDefaultWidget(self.zoom_widget)
+        # MARK: ngochdm
+        zoom = action(
+            self.tr("Zoom"),
+            tip=self.tr("Zoom Level"),
+            enabled=False,
+        )
+        
         self.zoom_widget.setWhatsThis(
             str(
                 self.tr(
@@ -1584,7 +1591,8 @@ class LabelingWidget(LabelDialog):
             undo,
             loop_thru_labels,
             None,
-            zoom,
+            # MARK: ngochdm
+            # zoom,
             fit_width,
             toggle_auto_labeling_widget,
             run_all_images,
@@ -1633,9 +1641,16 @@ class LabelingWidget(LabelDialog):
             lambda: self.inform_next_files(self.filename)
         )
         self.auto_labeling_widget.hide()  # Hide by default
-        central_layout.addWidget(self.label_instruction)
-        central_layout.addWidget(self.auto_labeling_widget)
-        central_layout.addWidget(scroll_area)
+        
+        # central_layout.addWidget(self.label_instruction)
+        # central_layout.addWidget(self.auto_labeling_widget)
+        # central_layout.addWidget(scroll_area)
+        # MARK: ngochdm
+        central_layout.addWidget(self.label_instruction, 0)
+        central_layout.addWidget(self.auto_labeling_widget, 0)
+        central_layout.addWidget(scroll_area, 1)
+        central_layout.addWidget(self.zoom_widget, 0)
+        
         layout.addItem(central_layout)
 
         # Save central area for resize
