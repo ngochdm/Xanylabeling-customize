@@ -10,10 +10,11 @@ class ZoomWidget(QtWidgets.QWidget):
         super().__init__()
         self._value = value
 
-        self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.slider = QtWidgets.QSlider(QtCore.Qt.Vertical)
         self.slider.setRange(1, 1000)
         self.slider.setValue(value)
-        self.slider.setMinimumWidth(180)
+        self.slider.setFixedHeight(110)
+        self.slider.setFixedWidth(22)
         self.slider.setToolTip(self.tr("Zoom Level"))
 
         self.spin_box = QtWidgets.QSpinBox()
@@ -21,23 +22,21 @@ class ZoomWidget(QtWidgets.QWidget):
         self.spin_box.setRange(1, 1000)
         self.spin_box.setSuffix("%")
         self.spin_box.setValue(value)
-        self.spin_box.setFixedWidth(64)
+        self.spin_box.setFixedWidth(43)
         self.spin_box.setKeyboardTracking(False)
         self.spin_box.setToolTip(self.tr("Zoom Level"))
         self.spin_box.setStatusTip(self.spin_box.toolTip())
         self.spin_box.setAlignment(QtCore.Qt.AlignCenter)
 
         font = self.spin_box.font()
-        font.setPointSize(9)
+        font.setPointSize(7)
         self.spin_box.setFont(font)
 
-        self.setMinimumHeight(34)
-
-        layout = QtWidgets.QHBoxLayout()
-        layout.setContentsMargins(6, 2, 6, 2)
-        layout.setSpacing(6)
-        layout.addWidget(self.slider, 1)
-        layout.addWidget(self.spin_box)
+        layout = QtWidgets.QVBoxLayout()
+        layout.setContentsMargins(0, 2, 0, 2)
+        layout.setSpacing(2)
+        layout.addWidget(self.slider, 0, QtCore.Qt.AlignCenter)
+        layout.addWidget(self.spin_box, 0, QtCore.Qt.AlignCenter)
         self.setLayout(layout)
 
         self.slider.valueChanged.connect(self._on_slider_changed)
@@ -77,16 +76,6 @@ class ZoomWidget(QtWidgets.QWidget):
         if emit:
             self.valueChanged.emit(value)
 
-    def setEnabled(self, enabled):
-        super().setEnabled(enabled)
-        self.slider.setEnabled(enabled)
-        self.spin_box.setEnabled(enabled)
-
-    def minimumSizeHint(self):
-        height = super().minimumSizeHint().height()
-        font_metric = QtGui.QFontMetrics(self.spin_box.font())
-        width = font_metric.horizontalAdvance(str(self.spin_box.maximum())) + 44
-        return QtCore.QSize(width + 180, height)
 
 
 # Old ZoomWidget
