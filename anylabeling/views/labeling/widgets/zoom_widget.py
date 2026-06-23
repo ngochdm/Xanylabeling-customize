@@ -1,15 +1,19 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
+# MARK: ngochdm
+
 class ZoomWidget(QtWidgets.QWidget):
     valueChanged = QtCore.pyqtSignal(int)
 
     def __init__(self, value=100):
         super().__init__()
+        self._value = value
 
         self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
         self.slider.setRange(1, 1000)
         self.slider.setValue(value)
+        self.slider.setMinimumWidth(180)
         self.slider.setToolTip(self.tr("Zoom Level"))
 
         self.spin_box = QtWidgets.QSpinBox()
@@ -17,6 +21,8 @@ class ZoomWidget(QtWidgets.QWidget):
         self.spin_box.setRange(1, 1000)
         self.spin_box.setSuffix("%")
         self.spin_box.setValue(value)
+        self.spin_box.setFixedWidth(64)
+        self.spin_box.setKeyboardTracking(False)
         self.spin_box.setToolTip(self.tr("Zoom Level"))
         self.spin_box.setStatusTip(self.spin_box.toolTip())
         self.spin_box.setAlignment(QtCore.Qt.AlignCenter)
@@ -25,6 +31,8 @@ class ZoomWidget(QtWidgets.QWidget):
         font.setPointSize(9)
         self.spin_box.setFont(font)
 
+        self.setMinimumHeight(34)
+
         layout = QtWidgets.QHBoxLayout()
         layout.setContentsMargins(6, 2, 6, 2)
         layout.setSpacing(6)
@@ -32,16 +40,32 @@ class ZoomWidget(QtWidgets.QWidget):
         layout.addWidget(self.spin_box)
         self.setLayout(layout)
 
-        self.slider.valueChanged.connect(self.setValue)
-        self.spin_box.valueChanged.connect(self.setValue)
+        self.slider.valueChanged.connect(self._on_slider_changed)
+        self.spin_box.lineEdit().returnPressed.connect(
+            self._on_spin_box_committed
+        )
 
     def value(self):
-        return self.spin_box.value()
+        return self._value
 
     def setValue(self, value):
-        value = max(self.spin_box.minimum(), min(self.spin_box.maximum(), int(value)))
-        if value == self.value():
+        self._set_value(value, emit=True)
+
+    def _on_slider_changed(self, value):
+        self._set_value(value, emit=True)
+
+    def _on_spin_box_committed(self):
+        self._set_value(self.spin_box.value(), emit=True)
+
+    def _set_value(self, value, emit):
+        value = max(
+            self.spin_box.minimum(),
+            min(self.spin_box.maximum(), int(value)),
+        )
+        if value == self._value:
             return
+
+        self._value = value
 
         self.slider.blockSignals(True)
         self.spin_box.blockSignals(True)
@@ -50,7 +74,8 @@ class ZoomWidget(QtWidgets.QWidget):
         self.spin_box.blockSignals(False)
         self.slider.blockSignals(False)
 
-        self.valueChanged.emit(value)
+        if emit:
+            self.valueChanged.emit(value)
 
     def setEnabled(self, enabled):
         super().setEnabled(enabled)
