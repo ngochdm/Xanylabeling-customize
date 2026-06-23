@@ -725,14 +725,14 @@ class LabelingWidget(LabelDialog):
             enabled=False,
         )
 
-        # zoom = QtWidgets.QWidgetAction(self)
-        # zoom.setDefaultWidget(self.zoom_widget)
+        zoom = QtWidgets.QWidgetAction(self)
+        zoom.setDefaultWidget(self.zoom_widget)
         # MARK: ngochdm
-        zoom = action(
-            self.tr("Zoom"),
-            tip=self.tr("Zoom Level"),
-            enabled=False,
-        )
+        # zoom = action(
+        #     self.tr("Zoom"),
+        #     tip=self.tr("Zoom Level"),
+        #     enabled=False,
+        # )
         
         self.zoom_widget.setWhatsThis(
             str(
@@ -1591,8 +1591,7 @@ class LabelingWidget(LabelDialog):
             undo,
             loop_thru_labels,
             None,
-            # MARK: ngochdm
-            # zoom,
+            zoom,
             fit_width,
             toggle_auto_labeling_widget,
             run_all_images,
@@ -1649,8 +1648,7 @@ class LabelingWidget(LabelDialog):
         central_layout.addWidget(self.label_instruction, 0)
         central_layout.addWidget(self.auto_labeling_widget, 0)
         central_layout.addWidget(scroll_area, 1)
-        central_layout.addWidget(self.zoom_widget, 0)
-        
+        # central_layout.addWidget(self.zoom_widget, 0)
         layout.addItem(central_layout)
 
         # Save central area for resize
@@ -1840,7 +1838,11 @@ class LabelingWidget(LabelDialog):
         toolbar.setOrientation(Qt.Vertical)
         toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         toolbar.setIconSize(QtCore.QSize(24, 24))
-        toolbar.setMaximumWidth(40)
+        
+        # toolbar.setMaximumWidth(40)
+        # MARK: ngochdm
+        toolbar.setMaximumWidth(45)
+        
         if actions:
             utils.add_actions(toolbar, actions)
         return toolbar
