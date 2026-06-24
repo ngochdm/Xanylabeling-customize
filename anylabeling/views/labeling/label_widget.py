@@ -1684,14 +1684,20 @@ class LabelingWidget(LabelDialog):
         # Shape text label
         self.shape_text_label = QLabel("Object Text")
         self.shape_text_edit = QPlainTextEdit()
+        # MARK: ngochdm
+        self.shape_text_edit.setMaximumHeight(100)
+
         right_sidebar_layout.addWidget(
             self.shape_text_label, 0, Qt.AlignCenter
         )
-        right_sidebar_layout.addWidget(self.shape_text_edit)
+        # right_sidebar_layout.addWidget(self.shape_text_edit)
+        right_sidebar_layout.addWidget(self.shape_text_edit, 0)
         right_sidebar_layout.addWidget(self.flag_dock)
-        right_sidebar_layout.addWidget(self.label_dock)
+        # right_sidebar_layout.addWidget(self.label_dock)
+        right_sidebar_layout.addWidget(self.label_dock, 1)
         right_sidebar_layout.addWidget(self.label_filter_combobox)
-        right_sidebar_layout.addWidget(self.shape_dock)
+        # right_sidebar_layout.addWidget(self.shape_dock)
+        right_sidebar_layout.addWidget(self.shape_dock, 2)
         right_sidebar_layout.addWidget(self.file_dock)
         self.file_dock.setFeatures(QDockWidget.DockWidgetFloatable)
         dock_features = (
