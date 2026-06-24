@@ -2743,6 +2743,15 @@ class LabelingWidget(LabelDialog):
             pattern=self.file_search.text(),
             load=False,
         )
+    
+    # MARK: ngochdm
+    def scroll_file_list_to_right(self):
+        QtCore.QTimer.singleShot(0, self._scroll_file_list_to_right)
+
+    # MARK: ngochdm
+    def _scroll_file_list_to_right(self):
+        scrollbar = self.file_list_widget.horizontalScrollBar()
+        scrollbar.setValue(scrollbar.maximum())
 
     def file_selection_changed(self):
         items = self.file_list_widget.selectedItems()
@@ -6204,6 +6213,8 @@ class LabelingWidget(LabelDialog):
             self.actions.open_prev_unchecked_image.setEnabled(True)
 
         self.open_next_image()
+        # MARK: ngochdm
+        self.scroll_file_list_to_right()
 
     def import_image_folder(self, dirpath, pattern=None, load=True):
         self.actions.open_next_image.setEnabled(True)
@@ -6236,6 +6247,8 @@ class LabelingWidget(LabelDialog):
             self.fn_to_index[filename] = self.file_list_widget.count() - 1
             utils.process_image_exif(filename)
         self.open_next_image(load=load)
+        # MARK: ngochdm
+        self.scroll_file_list_to_right()
 
     def scan_all_images(self, folder_path):
         try:
