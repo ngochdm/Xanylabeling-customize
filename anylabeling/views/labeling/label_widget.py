@@ -3847,7 +3847,23 @@ class LabelingWidget(LabelDialog):
                 if filename:
                     self.load_file(filename)
                 break
+    
+    # MARK: ngochdm
+    # def open_prev_image(self, _value=False):
+    #     if not self.may_continue():
+    #         return
 
+    #     if len(self.image_list) <= 0:
+    #         return
+
+    #     if self.filename is None:
+    #         return
+
+    #     current_index = self.fn_to_index[str(self.filename)]
+    #     if current_index - 1 >= 0:
+    #         filename = self.image_list[current_index - 1]
+    #         if filename:
+    #             self.load_file(filename)
     def open_prev_image(self, _value=False):
         if not self.may_continue():
             return
@@ -3858,12 +3874,36 @@ class LabelingWidget(LabelDialog):
         if self.filename is None:
             return
 
+        interval = self.navigation_interval_widget.value()
         current_index = self.fn_to_index[str(self.filename)]
-        if current_index - 1 >= 0:
-            filename = self.image_list[current_index - 1]
+        target_index = max(current_index - interval, 0)
+
+        if target_index != current_index:
+            filename = self.image_list[target_index]
             if filename:
                 self.load_file(filename)
 
+    # MARK: ngochdm
+    # def open_next_image(self, _value=False, load=True):
+    #     if not self.may_continue():
+    #         return
+
+    #     if len(self.image_list) <= 0:
+    #         return
+
+    #     filename = None
+    #     if self.filename is None:
+    #         filename = self.image_list[0]
+    #     else:
+    #         current_index = self.fn_to_index[str(self.filename)]
+    #         if current_index + 1 < len(self.image_list):
+    #             filename = self.image_list[current_index + 1]
+    #         else:
+    #             filename = self.image_list[-1]
+    #     self.filename = filename
+
+    #     if self.filename and load:
+    #         self.load_file(self.filename)
     def open_next_image(self, _value=False, load=True):
         if not self.may_continue():
             return
@@ -3875,17 +3915,17 @@ class LabelingWidget(LabelDialog):
         if self.filename is None:
             filename = self.image_list[0]
         else:
+            interval = self.navigation_interval_widget.value()
             current_index = self.fn_to_index[str(self.filename)]
-            if current_index + 1 < len(self.image_list):
-                filename = self.image_list[current_index + 1]
-            else:
-                filename = self.image_list[-1]
+            target_index = min(current_index + interval, len(self.image_list) - 1)
+            filename = self.image_list[target_index]
+
         self.filename = filename
 
         if self.filename and load:
             self.load_file(self.filename)
 
-    # Uplaod
+    # Upload
     def upload_image_flags_file(self):
         filter = "Image Flags Files (*.txt);;All Files (*)"
         file_path, _ = QtWidgets.QFileDialog.getOpenFileName(
