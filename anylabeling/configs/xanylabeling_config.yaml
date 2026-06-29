@@ -5,6 +5,7 @@ store_data: false
 keep_prev: false
 keep_prev_scale: false
 keep_zoom_position: false       # MARK: ngochdm 
+navigation_interval: 1          # ngochdm
 keep_prev_brightness: false
 keep_prev_contrast: false
 auto_use_last_label: false
