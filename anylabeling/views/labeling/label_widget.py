@@ -733,6 +733,26 @@ class LabelingWidget(LabelDialog):
         #     tip=self.tr("Zoom Level"),
         #     enabled=False,
         # )
+
+        # MARK: ngochdm
+        navigation_interval_widget = QtWidgets.QSpinBox()
+        navigation_interval_widget.setButtonSymbols(
+            QtWidgets.QAbstractSpinBox.NoButtons
+        )
+        navigation_interval_widget.setRange(1, 1000)
+        navigation_interval_widget.setValue(self._config["navigation_interval"])
+        navigation_interval_widget.setFixedWidth(43)
+        navigation_interval_widget.setKeyboardTracking(False)
+        navigation_interval_widget.setAlignment(QtCore.Qt.AlignCenter)
+        navigation_interval_widget.setToolTip(self.tr("Image navigation interval"))
+        navigation_interval_widget.setStatusTip(navigation_interval_widget.toolTip())
+        navigation_interval_widget.valueChanged.connect(
+            lambda value: self._config.update({"navigation_interval": value})
+        )
+
+        navigation_interval = QtWidgets.QWidgetAction(self)
+        navigation_interval.setDefaultWidget(navigation_interval_widget)
+        self.navigation_interval_widget = navigation_interval_widget
         
         self.zoom_widget.setWhatsThis(
             str(
@@ -1303,6 +1323,7 @@ class LabelingWidget(LabelDialog):
             export_pporc_rec_annotation=export_pporc_rec_annotation,
             export_pporc_kie_annotation=export_pporc_kie_annotation,
             zoom=zoom,
+            navigation_interval=navigation_interval,    # MARK: ngochdm
             zoom_in=zoom_in,
             zoom_out=zoom_out,
             zoom_org=zoom_org,
@@ -1575,7 +1596,9 @@ class LabelingWidget(LabelDialog):
             opendir,
             open_next_image,
             open_prev_image,
+            navigation_interval,    # MARK: ngochdm
             save,
+            None,
             delete_file,
             None,
             create_mode,
