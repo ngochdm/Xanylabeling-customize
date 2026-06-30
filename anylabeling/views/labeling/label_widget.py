@@ -77,8 +77,8 @@ class LabelingWidget(LabelDialog):
     """The main widget for labeling images"""
 
     # MARK: ngochdm
-    # FIT_WINDOW, FIT_WIDTH, MANUAL_ZOOM = 0, 1, 2
-    FIT_WINDOW, FIT_WIDTH, FIT_HEIGHT, MANUAL_ZOOM = 0, 1, 2, 3
+    FIT_WINDOW, FIT_WIDTH, MANUAL_ZOOM = 0, 1, 2
+    # FIT_WINDOW, FIT_WIDTH, FIT_HEIGHT, MANUAL_ZOOM = 0, 1, 2, 3
 
     next_files_changed = QtCore.pyqtSignal(list)
 
@@ -847,16 +847,6 @@ class LabelingWidget(LabelDialog):
             checkable=True,
             enabled=False,
         )
-        # MARK: ngochdm
-        fit_height = action(
-            self.tr("Fit &Height"),
-            self.set_fit_height,
-            shortcuts["fit_height"],
-            "fit",
-            self.tr("Zoom follows window height"),
-            checkable=True,
-            enabled=False,
-        )
         
         brightness_contrast = action(
             self.tr("&Set Brightness Contrast"),
@@ -1222,14 +1212,12 @@ class LabelingWidget(LabelDialog):
             zoom_org,
             fit_window,
             fit_width,
-            fit_height,                                 # MARK: ngochdm
         )
         self.zoom_mode = self.FIT_WINDOW
         fit_window.setChecked(Qt.Checked)
         self.scalers = {
             self.FIT_WINDOW: self.scale_fit_window,
             self.FIT_WIDTH: self.scale_fit_width,
-            self.FIT_HEIGHT: self.scale_fit_height,     # MARK: ngochdm
             # Set to one to scale to 100% when loading files.
             self.MANUAL_ZOOM: lambda: 1,
         }
@@ -1349,7 +1337,6 @@ class LabelingWidget(LabelDialog):
             keep_prev_contrast=keep_prev_contrast,
             fit_window=fit_window,
             fit_width=fit_width,
-            fit_height=fit_height,                      # MARK: ngochdm 
             brightness_contrast=brightness_contrast,
             set_cross_line=set_cross_line,
             show_groups=show_groups,
@@ -1578,7 +1565,6 @@ class LabelingWidget(LabelDialog):
                 None,
                 fit_window,
                 fit_width,
-                fit_height,                 # MARK: ngochdm 
                 None,
                 brightness_contrast,
                 set_cross_line,
@@ -1614,7 +1600,7 @@ class LabelingWidget(LabelDialog):
             opendir,
             open_next_image,
             open_prev_image,
-            navigation_interval,    # MARK: ngochdm
+            navigation_interval,                    # MARK: ngochdm
             save,
             None,
             delete_file,
@@ -1633,8 +1619,8 @@ class LabelingWidget(LabelDialog):
             loop_thru_labels,
             None,
             zoom,
+            fit_window,                             # MARK: ngochdm
             fit_width,
-            fit_height,             # MARK: ngochdm
             toggle_auto_labeling_widget,
             run_all_images,
         )
@@ -3414,7 +3400,6 @@ class LabelingWidget(LabelDialog):
     def set_zoom(self, value):
         self.actions.fit_width.setChecked(False)
         self.actions.fit_window.setChecked(False)
-        self.actions.fit_height.setChecked(True)            # MARK: ngochdm
         self.zoom_mode = self.MANUAL_ZOOM
         self.zoom_widget.setValue(value)
         self.zoom_values[self.filename] = (self.zoom_mode, value)
@@ -3453,23 +3438,13 @@ class LabelingWidget(LabelDialog):
     def set_fit_window(self, value=True):
         if value:
             self.actions.fit_width.setChecked(False)
-            self.actions.fit_height.setChecked(False)           # MARK: ngochdm
         self.zoom_mode = self.FIT_WINDOW if value else self.MANUAL_ZOOM
         self.adjust_scale()
 
     def set_fit_width(self, value=True):
         if value:
             self.actions.fit_window.setChecked(False)
-            self.actions.fit_height.setChecked(False)           # MARK: ngochdm
         self.zoom_mode = self.FIT_WIDTH if value else self.MANUAL_ZOOM
-        self.adjust_scale()
-
-    # MARK: ngochdm
-    def set_fit_height(self, value=True):
-        if value:
-            self.actions.fit_window.setChecked(False)
-            self.actions.fit_width.setChecked(False)
-        self.zoom_mode = self.FIT_HEIGHT if value else self.MANUAL_ZOOM
         self.adjust_scale()
     
     def set_cross_line(self):
@@ -3786,11 +3761,6 @@ class LabelingWidget(LabelDialog):
         # The epsilon does not seem to work too well here.
         w = self.central_widget().width() - 2.0
         return w / self.canvas.pixmap.width()
-
-    # MARK: ngochdm
-    def scale_fit_height(self):
-        h = self.central_widget().height() - 2.0
-        return h / self.canvas.pixmap.height()
 
     # QT Overload
     def closeEvent(self, event):
