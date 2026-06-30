@@ -1631,6 +1631,7 @@ class LabelingWidget(LabelDialog):
             None,
             zoom,
             fit_width,
+            # fit_height,
             toggle_auto_labeling_widget,
             run_all_images,
         )
@@ -3413,30 +3414,6 @@ class LabelingWidget(LabelDialog):
         self.zoom_mode = self.MANUAL_ZOOM
         self.zoom_widget.setValue(value)
         self.zoom_values[self.filename] = (self.zoom_mode, value)
-    
-    # MARK: ngochdm
-    def set_fit_window(self, value=True):
-        if value:
-            self.actions.fit_width.setChecked(False)
-            self.actions.fit_height.setChecked(False)
-        self.zoom_mode = self.FIT_WINDOW if value else self.MANUAL_ZOOM
-        self.adjust_scale()
-
-    # MARK: ngochdm
-    def set_fit_width(self, value=True):
-        if value:
-            self.actions.fit_window.setChecked(False)
-            self.actions.fit_height.setChecked(False)
-        self.zoom_mode = self.FIT_WIDTH if value else self.MANUAL_ZOOM
-        self.adjust_scale()
-
-    # MARK: ngochdm
-    def set_fit_height(self, value=True):
-        if value:
-            self.actions.fit_window.setChecked(False)
-            self.actions.fit_width.setChecked(False)
-        self.zoom_mode = self.FIT_HEIGHT if value else self.MANUAL_ZOOM
-        self.adjust_scale()
 
     def add_zoom(self, increment=1.1):
         zoom_value = self.zoom_widget.value() * increment
@@ -3481,6 +3458,14 @@ class LabelingWidget(LabelDialog):
         self.zoom_mode = self.FIT_WIDTH if value else self.MANUAL_ZOOM
         self.adjust_scale()
 
+    # MARK: ngochdm
+    def set_fit_height(self, value=True):
+        if value:
+            self.actions.fit_window.setChecked(False)
+            self.actions.fit_width.setChecked(False)
+        self.zoom_mode = self.FIT_HEIGHT if value else self.MANUAL_ZOOM
+        self.adjust_scale()
+    
     def set_cross_line(self):
         crosshair_dialog = CrosshairSettingsDialog(**self.crosshair_settings)
         if crosshair_dialog.exec_() == QtWidgets.QDialog.Accepted:
