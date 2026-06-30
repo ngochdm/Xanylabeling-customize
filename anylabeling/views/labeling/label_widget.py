@@ -6296,6 +6296,7 @@ class LabelingWidget(LabelDialog):
         self.last_open_dir = dirpath
         self.filename = None
         self.file_list_widget.clear()
+
         for filename in self.scan_all_images(dirpath):
             if pattern and pattern not in filename:
                 continue
@@ -6313,7 +6314,9 @@ class LabelingWidget(LabelDialog):
                 item.setCheckState(Qt.Unchecked)
             self.file_list_widget.addItem(item)
             self.fn_to_index[filename] = self.file_list_widget.count() - 1
+            
             utils.process_image_exif(filename)
+        
         self.open_next_image(load=load)
         # MARK: ngochdm
         self.scroll_file_list_to_right()
