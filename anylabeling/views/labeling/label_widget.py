@@ -1222,6 +1222,7 @@ class LabelingWidget(LabelDialog):
             zoom_org,
             fit_window,
             fit_width,
+            fit_height,                                 # MARK: ngochdm
         )
         self.zoom_mode = self.FIT_WINDOW
         fit_window.setChecked(Qt.Checked)
@@ -1348,6 +1349,7 @@ class LabelingWidget(LabelDialog):
             keep_prev_contrast=keep_prev_contrast,
             fit_window=fit_window,
             fit_width=fit_width,
+            fit_height=fit_height,                      # MARK: ngochdm 
             brightness_contrast=brightness_contrast,
             set_cross_line=set_cross_line,
             show_groups=show_groups,
@@ -1576,6 +1578,7 @@ class LabelingWidget(LabelDialog):
                 None,
                 fit_window,
                 fit_width,
+                fit_height,                 # MARK: ngochdm 
                 None,
                 brightness_contrast,
                 set_cross_line,
@@ -1631,7 +1634,7 @@ class LabelingWidget(LabelDialog):
             None,
             zoom,
             fit_width,
-            # fit_height,
+            fit_height,             # MARK: ngochdm
             toggle_auto_labeling_widget,
             run_all_images,
         )
@@ -3411,6 +3414,7 @@ class LabelingWidget(LabelDialog):
     def set_zoom(self, value):
         self.actions.fit_width.setChecked(False)
         self.actions.fit_window.setChecked(False)
+        self.actions.fit_height.setChecked(True)            # MARK: ngochdm
         self.zoom_mode = self.MANUAL_ZOOM
         self.zoom_widget.setValue(value)
         self.zoom_values[self.filename] = (self.zoom_mode, value)
@@ -3449,12 +3453,14 @@ class LabelingWidget(LabelDialog):
     def set_fit_window(self, value=True):
         if value:
             self.actions.fit_width.setChecked(False)
+            self.actions.fit_height.setChecked(False)           # MARK: ngochdm
         self.zoom_mode = self.FIT_WINDOW if value else self.MANUAL_ZOOM
         self.adjust_scale()
 
     def set_fit_width(self, value=True):
         if value:
             self.actions.fit_window.setChecked(False)
+            self.actions.fit_height.setChecked(False)           # MARK: ngochdm
         self.zoom_mode = self.FIT_WIDTH if value else self.MANUAL_ZOOM
         self.adjust_scale()
 
