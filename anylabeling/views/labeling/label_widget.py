@@ -540,6 +540,27 @@ class LabelingWidget(LabelDialog):
             self.tr("Move and edit the selected polygons"),
             enabled=False,
         )
+
+        # MARK: ngochdm
+        rotate_linestrip_left = action(
+            self.tr("Rotate LineStrip Left 90°"),
+            lambda: self.canvas.rotate_selected_linestrips(math.pi / 2),
+            None,
+            "rotation",
+            self.tr("Rotate selected linestrip left 90 degrees"),
+            enabled=False,
+        )
+
+        # MARK: ngochdm
+        rotate_linestrip_right = action(
+            self.tr("Rotate LineStrip Right 90°"),
+            lambda: self.canvas.rotate_selected_linestrips(-math.pi / 2),
+            None,
+            "rotation",
+            self.tr("Rotate selected linestrip right 90 degrees"),
+            enabled=False,
+        )
+
         group_selected_shapes = action(
             self.tr("Group Selected Shapes"),
             self.canvas.group_selected_shapes,
@@ -1286,6 +1307,8 @@ class LabelingWidget(LabelDialog):
             remove_point=remove_point,
             create_mode=create_mode,
             edit_mode=edit_mode,
+            rotate_linestrip_left=rotate_linestrip_left,            # MARK: ngochdm
+            rotate_linestrip_right=rotate_linestrip_right,          # MARK: ngochdm
             create_rectangle_mode=create_rectangle_mode,
             create_rotation_mode=create_rotation_mode,
             create_circle_mode=create_circle_mode,
@@ -1371,6 +1394,8 @@ class LabelingWidget(LabelDialog):
                 undo_last_point,
                 None,
                 remove_point,
+                rotate_linestrip_left,      # MARK: ngochdm
+                rotate_linestrip_right,     # MARK: ngochdm
                 union_selection,
                 None,
                 keep_prev_mode,
@@ -1390,6 +1415,8 @@ class LabelingWidget(LabelDialog):
                 edit_mode,
                 edit,
                 union_selection,
+                rotate_linestrip_left,      # MARK: ngochdm
+                rotate_linestrip_right,     # MARK: ngochdm
                 duplicate,
                 copy,
                 paste,
@@ -1614,6 +1641,8 @@ class LabelingWidget(LabelDialog):
             self.actions.create_line_strip_mode,
             None,
             edit_mode,
+            rotate_linestrip_left,                  # MARK: ngochdm
+            rotate_linestrip_right,                 # MARK: ngochdm
             delete,
             undo,
             loop_thru_labels,
@@ -2978,6 +3007,14 @@ class LabelingWidget(LabelDialog):
         self.actions.union_selection.setEnabled(
             is_mergeable and n_selected > 1
         )
+        is_linestrip_selection = (
+            n_selected > 0
+            and all(
+                shape.shape_type == "linestrip" for shape in selected_shapes
+            )
+        )
+        self.actions.rotate_linestrip_left.setEnabled(is_linestrip_selection)
+        self.actions.rotate_linestrip_right.setEnabled(is_linestrip_selection)
         self.set_text_editing(True)
         if self.attributes:
             # TODO: For future optimization(add parm to monitor selected_shape status)
