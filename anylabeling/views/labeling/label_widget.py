@@ -546,7 +546,7 @@ class LabelingWidget(LabelDialog):
             self.tr("Rotate LineStrip Left 90°"),
             lambda: self.canvas.rotate_selected_linestrips(math.pi / 2),
             None,
-            "rotation",
+            "rotate-left",
             self.tr("Rotate selected linestrip left 90 degrees"),
             enabled=False,
         )
@@ -556,7 +556,7 @@ class LabelingWidget(LabelDialog):
             self.tr("Rotate LineStrip Right 90°"),
             lambda: self.canvas.rotate_selected_linestrips(-math.pi / 2),
             None,
-            "rotation",
+            "rotate-right",
             self.tr("Rotate selected linestrip right 90 degrees"),
             enabled=False,
         )
