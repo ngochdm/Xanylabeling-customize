@@ -230,16 +230,39 @@ class LabelingWidget(LabelDialog):
 
         self.file_search = QtWidgets.QLineEdit()
         self.file_search.setPlaceholderText(self.tr("Search Filename"))
+        # MARK: ngochdm
+        self.file_search.setFixedWidth(120)
         self.file_search.textChanged.connect(self.file_search_changed)
+
+        self.auto_navigate_steps = QtWidgets.QSpinBox()
+        self.auto_navigate_steps.setRange(-1000, 1000)
+        self.auto_navigate_steps.setValue(1)
+        self.auto_navigate_steps.setFixedWidth(55)
+        self.auto_navigate_steps.setAlignment(QtCore.Qt.AlignCenter)
+        self.auto_navigate_steps.setToolTip(self.tr("Number of auto navigation steps"))
+
+        self.auto_navigate_button = QtWidgets.QPushButton(self.tr("auto jump"))
+        self.auto_navigate_button.clicked.connect(self.auto_navigate_images)
+
         self.file_list_widget = QtWidgets.QListWidget()
         self.file_list_widget.itemSelectionChanged.connect(
             self.file_selection_changed
         )
+
+        file_search_layout = QtWidgets.QHBoxLayout()
+        file_search_layout.setContentsMargins(0, 0, 0, 0)
+        file_search_layout.setSpacing(4)
+        file_search_layout.addWidget(self.file_search)
+        file_search_layout.addWidget(self.auto_navigate_steps)
+        file_search_layout.addWidget(self.auto_navigate_button)
+
         file_list_layout = QtWidgets.QVBoxLayout()
         file_list_layout.setContentsMargins(0, 0, 0, 0)
         file_list_layout.setSpacing(0)
-        file_list_layout.addWidget(self.file_search)
+        # file_list_layout.addWidget(self.file_search)
+        file_list_layout.addLayout(file_search_layout)
         file_list_layout.addWidget(self.file_list_widget)
+
         self.file_dock = QtWidgets.QDockWidget(self.tr("Files"), self)
         self.file_dock.setObjectName("Files")
         file_list_widget = QtWidgets.QWidget()
@@ -3966,6 +3989,36 @@ class LabelingWidget(LabelDialog):
 
         if self.filename and load:
             self.load_file(self.filename)
+
+    # MARK: ngochdm
+    def auto_navigate_images(self):
+        steps = self.auto_navigate_steps.value()
+        if steps == 0:
+            return
+
+        direction = 1 if steps > 0 else -1
+        remaining_steps = abs(steps)
+
+        def navigate_once():
+            nonlocal remaining_steps
+            if remaining_steps <= 0:
+                return
+
+            previous_filename = self.filename
+
+            if direction > 0:
+                self.open_next_image()
+            else:
+                self.open_prev_image()
+
+            if self.filename == previous_filename:
+                return
+
+            remaining_steps -= 1
+            if remaining_steps > 0:
+                QtCore.QTimer.singleShot(100, navigate_once)
+
+        navigate_once()
 
     # Upload
     def upload_image_flags_file(self):
