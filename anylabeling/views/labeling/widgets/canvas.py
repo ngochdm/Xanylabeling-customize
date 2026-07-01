@@ -908,6 +908,30 @@ class Canvas(
         pRes = QtCore.QPointF(center.x() + pResx, center.y() + pResy)
         return pRes
 
+    # MARK: ngochdm
+    def rotate_selected_linestrips(self, theta):
+        linestrips = [
+            shape for shape in self.selected_shapes
+            if shape.shape_type == "linestrip"
+        ]
+        if not linestrips:
+            return
+
+        for shape in linestrips:
+            min_x = min(point.x() for point in shape.points)
+            max_x = max(point.x() for point in shape.points)
+            min_y = min(point.y() for point in shape.points)
+            max_y = max(point.y() for point in shape.points)
+            center = QtCore.QPointF((min_x + max_x) / 2, (min_y + max_y) / 2)
+
+            shape.points = [
+                self.rotate_point(point, center, theta) for point in shape.points
+            ]
+
+        self.store_shapes()
+        self.repaint()
+        self.shape_rotated.emit()
+
     def bounded_rotate_shapes(self, i, shape, theta):
         """Rotate shapes. Adjust position to be bounded by pixmap border"""
         new_shape = deepcopy(shape)
