@@ -5,6 +5,8 @@ This repository is a customized clone of X-AnyLabeling v2.5.0.
 
 **Original Repo:** https://github.com/CVHub520/X-AnyLabeling/releases/tag/v2.5.0
 
+Please read [README_Xanylabeling.md](README_Xanylabeling.md) for more detailed information.
+
 
 ## Feature Updates
 
