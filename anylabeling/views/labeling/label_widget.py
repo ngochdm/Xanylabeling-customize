@@ -231,18 +231,22 @@ class LabelingWidget(LabelDialog):
         self.file_search = QtWidgets.QLineEdit()
         self.file_search.setPlaceholderText(self.tr("Search Filename"))
         # MARK: ngochdm
-        self.file_search.setFixedWidth(120)
+        self.file_search.setFixedWidth(161)
         self.file_search.textChanged.connect(self.file_search_changed)
 
         self.auto_navigate_steps = QtWidgets.QSpinBox()
-        self.auto_navigate_steps.setRange(-1000, 1000)
+        self.auto_navigate_steps.setRange(-999, 999)
         self.auto_navigate_steps.setValue(1)
-        self.auto_navigate_steps.setFixedWidth(55)
+        self.auto_navigate_steps.setFixedWidth(50)
         self.auto_navigate_steps.setAlignment(QtCore.Qt.AlignCenter)
         self.auto_navigate_steps.setToolTip(self.tr("Number of auto navigation steps"))
 
         self.auto_navigate_button = QtWidgets.QPushButton(self.tr("auto jump"))
         self.auto_navigate_button.clicked.connect(self.auto_navigate_images)
+
+        self.auto_navigate_running = False
+        self.auto_navigate_remaining_steps = 0
+        self.auto_navigate_direction = 1
 
         self.file_list_widget = QtWidgets.QListWidget()
         self.file_list_widget.itemSelectionChanged.connect(
@@ -3992,33 +3996,51 @@ class LabelingWidget(LabelDialog):
 
     # MARK: ngochdm
     def auto_navigate_images(self):
+        if self.auto_navigate_running:
+            self.stop_auto_navigate()
+            return
+
         steps = self.auto_navigate_steps.value()
         if steps == 0:
             return
 
-        direction = 1 if steps > 0 else -1
-        remaining_steps = abs(steps)
+        self.auto_navigate_direction = 1 if steps > 0 else -1
+        self.auto_navigate_remaining_steps = abs(steps)
+        self.auto_navigate_running = True
+        self.auto_navigate_button.setText(self.tr("stop"))
+        self._auto_navigate_once()
 
-        def navigate_once():
-            nonlocal remaining_steps
-            if remaining_steps <= 0:
-                return
+    # MARK: ngochdm
+    def stop_auto_navigate(self):
+        self.auto_navigate_running = False
+        self.auto_navigate_remaining_steps = 0
+        self.auto_navigate_button.setText(self.tr("auto jump"))
 
-            previous_filename = self.filename
+    # MARK: ngochdm
+    def _auto_navigate_once(self):
+        if (
+            not self.auto_navigate_running
+            or self.auto_navigate_remaining_steps <= 0
+        ):
+            self.stop_auto_navigate()
+            return
 
-            if direction > 0:
-                self.open_next_image()
-            else:
-                self.open_prev_image()
+        previous_filename = self.filename
 
-            if self.filename == previous_filename:
-                return
+        if self.auto_navigate_direction > 0:
+            self.open_next_image()
+        else:
+            self.open_prev_image()
 
-            remaining_steps -= 1
-            if remaining_steps > 0:
-                QtCore.QTimer.singleShot(100, navigate_once)
+        if self.filename == previous_filename:
+            self.stop_auto_navigate()
+            return
 
-        navigate_once()
+        self.auto_navigate_remaining_steps -= 1
+        if self.auto_navigate_remaining_steps > 0:
+            QtCore.QTimer.singleShot(100, self._auto_navigate_once)
+        else:
+            self.stop_auto_navigate()
 
     # Upload
     def upload_image_flags_file(self):
