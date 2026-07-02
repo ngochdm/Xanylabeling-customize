@@ -4007,14 +4007,25 @@ class LabelingWidget(LabelDialog):
         self.auto_navigate_direction = 1 if steps > 0 else -1
         self.auto_navigate_remaining_steps = abs(steps)
         self.auto_navigate_running = True
-        self.auto_navigate_button.setText(self.tr("stop"))
+        self.update_auto_navigate_button_text()
         self._auto_navigate_once()
+
+    # MARK: ngochdm
+    def update_auto_navigate_button_text(self):
+        if self.auto_navigate_running:
+            self.auto_navigate_button.setText(
+                self.tr("stop ({})").format(
+                    self.auto_navigate_remaining_steps
+                )
+            )
+        else:
+            self.auto_navigate_button.setText(self.tr("auto jump"))
 
     # MARK: ngochdm
     def stop_auto_navigate(self):
         self.auto_navigate_running = False
         self.auto_navigate_remaining_steps = 0
-        self.auto_navigate_button.setText(self.tr("auto jump"))
+        self.update_auto_navigate_button_text()
 
     # MARK: ngochdm
     def _auto_navigate_once(self):
@@ -4037,6 +4048,8 @@ class LabelingWidget(LabelDialog):
             return
 
         self.auto_navigate_remaining_steps -= 1
+        self.update_auto_navigate_button_text()
+
         if self.auto_navigate_remaining_steps > 0:
             QtCore.QTimer.singleShot(100, self._auto_navigate_once)
         else:
