@@ -42,6 +42,7 @@ Please read [README_Xanylabeling.md](README_Xanylabeling.md) for more detailed i
 - Added and repositioned the zoom bar in the labeling UI.
 
 
+<!-- MARK: Notes -->
 ## Notes
 
 - This README documents custom changes on top of upstream X-AnyLabeling v2.5.0.
