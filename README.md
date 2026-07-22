@@ -9,6 +9,7 @@ Please read [README_Xanylabeling.md](README_Xanylabeling.md) for more detailed i
 
 
 <!-- MARK: Updates -->
+
 ## Feature Updates
 
 ### July 1, 2026
@@ -43,6 +44,7 @@ Please read [README_Xanylabeling.md](README_Xanylabeling.md) for more detailed i
 
 
 <!-- MARK: Notes -->
+
 ## Notes
 
 - This README documents custom changes on top of upstream X-AnyLabeling v2.5.0.
