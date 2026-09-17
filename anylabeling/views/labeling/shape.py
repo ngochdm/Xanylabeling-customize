@@ -56,6 +56,7 @@ class Shape:
     point_size = 4
     scale = 1.5
     line_width = 2.0
+    bbox_line_width = None          # MARK: ngochdm
 
     def __init__(
         self,
@@ -239,8 +240,20 @@ class Shape:
                 self.select_line_color if self.selected else self.line_color
             )
             pen = QtGui.QPen(color)
-            # Try using integer sizes for smoother drawing(?)
-            pen.setWidth(max(1, int(round(self.line_width / self.scale))))
+
+            # MARK: ngochdm
+            line_width = self.line_width
+            if (
+                self.shape_type in ("rectangle", "rotation")
+                and Shape.bbox_line_width is not None
+            ):
+                line_width = Shape.bbox_line_width
+
+            # Preserve the existing zoom-dependent rendering behavior.
+            pen.setWidth(max(1, int(round(line_width / self.scale))))
+
+            # # Try using integer sizes for smoother drawing(?)
+            # pen.setWidth(max(1, int(round(self.line_width / self.scale))))
             painter.setPen(pen)
 
             line_path = QtGui.QPainterPath()
