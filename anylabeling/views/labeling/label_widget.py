@@ -3931,7 +3931,6 @@ class LabelingWidget(LabelDialog):
         self.settings.setValue("window/position", self.pos())
         self.settings.setValue("window/state", self.parent.parent.saveState())
         self.settings.setValue("recent_files", self.recent_files)
-        self.set_bbox_thickness()           # MARK: ngochdm
         save_config(self._config)
         # ask the use for where to save the labels
         # self.settings.setValue('window/geometry', self.saveGeometry())
