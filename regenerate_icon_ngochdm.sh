@@ -4,7 +4,7 @@ eval "$(conda shell.bash hook)"
 
 conda activate Xanylabeling
 
-cd /home/ngochdm/Desktop/github/Xanylabeling-customize/
+cd /media/ngochdm/Projects/GITHUB/Xanylabeling-customize/
 
 if ! command -v pyrcc5 >/dev/null 2>&1; then
     echo "pyrcc5 not found. Activate an environment with PyQt5 installed." >&2

@@ -2,6 +2,6 @@ eval "$(conda shell.bash hook)"
 
 conda activate Xanylabeling
 
-cd /home/ngochdm/Desktop/github/Xanylabeling-customize/
+cd /media/ngochdm/Projects/GITHUB/Xanylabeling-customize/
 
 python anylabeling/app.py
