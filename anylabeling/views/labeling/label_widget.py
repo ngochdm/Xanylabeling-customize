@@ -143,6 +143,19 @@ class LabelingWidget(LabelDialog):
         # Set line width from config file
         Shape.line_width = self._config["shape"]["line_width"]
 
+        # MARK: ngochdm
+        # Optional display override for regular and rotated bounding boxes.
+        bbox_line_width = self._config["shape"].get("bbox_line_width")
+        if (
+            type(bbox_line_width) is not int
+            or not 1 <= bbox_line_width <= 20
+        ):
+            bbox_line_width = None
+
+        Shape.bbox_line_width = bbox_line_width
+        self._config["shape"]["bbox_line_width"] = bbox_line_width
+        # /ngochdm
+
         super(LabelDialog, self).__init__()
 
         # Whether we need to save or not.
@@ -804,6 +817,51 @@ class LabelingWidget(LabelDialog):
         navigation_interval = QtWidgets.QWidgetAction(self)
         navigation_interval.setDefaultWidget(navigation_interval_widget)
         self.navigation_interval_widget = navigation_interval_widget
+
+        # MARK: ngochdm
+        # Optional bounding-box thickness field in the left toolbar.
+        self.bbox_thickness_widget = QtWidgets.QLineEdit(self)
+        self.bbox_thickness_widget.setFixedWidth(43)
+        self.bbox_thickness_widget.setAlignment(QtCore.Qt.AlignCenter)
+        self.bbox_thickness_widget.setPlaceholderText(self.tr("Auto"))
+        self.bbox_thickness_widget.setAccessibleName(
+            self.tr("Bounding box thickness")
+        )
+        self.bbox_thickness_widget.setToolTip(
+            self.tr(
+                "Bounding box thickness (1-20). "
+                "Leave empty to use the existing defaults."
+            )
+        )
+        self.bbox_thickness_widget.setStatusTip(
+            self.bbox_thickness_widget.toolTip()
+        )
+        self.bbox_thickness_widget.setText(
+            "" if Shape.bbox_line_width is None
+            else str(Shape.bbox_line_width)
+        )
+        self.bbox_thickness_widget.editingFinished.connect(
+            self.set_bbox_thickness
+        )
+
+        self.bbox_thickness_action = QtWidgets.QWidgetAction(self)
+        self.bbox_thickness_action.setDefaultWidget(
+            self.bbox_thickness_widget
+        )
+        bbox_thickness_visible = self._config.get(
+            "show_bbox_thickness", False
+        )
+        self.bbox_thickness_action.setVisible(bbox_thickness_visible)
+
+        show_bbox_thickness = action(
+            self.tr("Bounding Box Thickness"),
+            self.toggle_bbox_thickness,
+            tip=self.tr("Show or hide the bounding box thickness field"),
+            checkable=True,
+            checked=bbox_thickness_visible,
+        )
+        # /ngochdm
+
         
         self.zoom_widget.setWhatsThis(
             str(
@@ -1603,6 +1661,7 @@ class LabelingWidget(LabelDialog):
                 self.label_dock.toggleViewAction(),
                 self.shape_dock.toggleViewAction(),
                 self.file_dock.toggleViewAction(),
+                show_bbox_thickness,        # MARK: ngochdm
                 None,
                 fill_drawing,
                 None,
@@ -1674,6 +1733,7 @@ class LabelingWidget(LabelDialog):
             undo,
             loop_thru_labels,
             None,
+            self.bbox_thickness_action,             # MARK: ngochdm
             zoom,
             fit_window,                             # MARK: ngochdm
             fit_width,
@@ -3510,6 +3570,40 @@ class LabelingWidget(LabelDialog):
             self.actions.fit_window.setChecked(False)
         self.zoom_mode = self.FIT_WIDTH if value else self.MANUAL_ZOOM
         self.adjust_scale()
+
+    # MARK: ngochdm
+    def toggle_bbox_thickness(self, visible):
+        self._config["show_bbox_thickness"] = bool(visible)
+        self.bbox_thickness_action.setVisible(visible)
+
+    def set_bbox_thickness(self):
+        text = self.bbox_thickness_widget.text().strip()
+        previous_width = self._config["shape"].get("bbox_line_width")
+
+        if not text:
+            width = None
+        elif re.fullmatch(r"(?:[1-9]|1[0-9]|20)", text):
+            width = int(text)
+        else:
+            self.bbox_thickness_widget.setText(
+                "" if previous_width is None else str(previous_width)
+            )
+            self.status(
+                self.tr(
+                    "Enter a whole number from 1 to 20, or leave empty."
+                ),
+                5000,
+            )
+            return
+
+        self.bbox_thickness_widget.setText(
+            "" if width is None else str(width)
+        )
+        self._config["shape"]["bbox_line_width"] = width
+        Shape.bbox_line_width = width
+        self.canvas.update()
+    # /ngochdm
+
     
     def set_cross_line(self):
         crosshair_dialog = CrosshairSettingsDialog(**self.crosshair_settings)
@@ -3837,6 +3931,7 @@ class LabelingWidget(LabelDialog):
         self.settings.setValue("window/position", self.pos())
         self.settings.setValue("window/state", self.parent.parent.saveState())
         self.settings.setValue("recent_files", self.recent_files)
+        self.set_bbox_thickness()           # MARK: ngochdm
         save_config(self._config)
         # ask the use for where to save the labels
         # self.settings.setValue('window/geometry', self.saveGeometry())
