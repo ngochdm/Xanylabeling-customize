@@ -108,6 +108,7 @@ class Canvas(
         self.show_groups = False
         self.show_texts = True
         self.show_labels = True
+        self.label_font_size = None         # MARK: ngochdm
         self.show_scores = True
         self.show_degrees = False
         self.show_linking = True
@@ -1316,14 +1317,22 @@ class Canvas(
 
         # Draw labels
         if self.show_labels:
-            p.setFont(
-                QtGui.QFont(
+            p.save()
+            label_scale = 1.0
+            if self.label_font_size is None:
+                label_font = QtGui.QFont(
                     "Arial", int(max(6.0, int(round(8.0 / Shape.scale))))
                 )
-            )
+            else:
+                # Use screen coordinates so the font stays the same size.
+                label_scale = Shape.scale
+                p.scale(1.0 / label_scale, 1.0 / label_scale)
+                label_font = QtGui.QFont("Arial", self.label_font_size)
+            p.setFont(label_font)
+
             labels = []
             for shape in self.shapes:
-                d_react = shape.point_size / shape.scale
+                d_react = (shape.point_size / shape.scale) * label_scale
                 d_text = 1.5
                 if not shape.visible:
                     continue
@@ -1350,9 +1359,16 @@ class Canvas(
                     continue
                 fm = QtGui.QFontMetrics(p.font())
                 bound_rect = fm.boundingRect(label_text)
+
                 if shape.shape_type in ["rectangle", "polygon", "rotation"]:
                     try:
                         bbox = shape.bounding_rect()
+                        bbox = QtCore.QRectF(
+                            bbox.x() * label_scale,
+                            bbox.y() * label_scale,
+                            bbox.width() * label_scale,
+                            bbox.height() * label_scale,
+                        )
                     except IndexError:
                         continue
                     rect = QtCore.QRect(
@@ -1372,16 +1388,22 @@ class Canvas(
                     "point",
                 ]:
                     points = shape.points
-                    point = points[0]
+
+                    # point = points[0]
+                    point = points[0] * label_scale
+
                     rect = QtCore.QRect(
                         int(point.x() + d_react),
-                        int(point.y() - 15),
+                        int(point.y() - 15 * label_scale),
                         int(bound_rect.width()),
                         int(bound_rect.height()),
                     )
                     text_pos = QtCore.QPoint(
                         int(point.x()),
-                        int(point.y() - 15 + bound_rect.height() - d_text),
+                        int(
+                            point.y() - 15 * label_scale
+                            + bound_rect.height() - d_text
+                        ),
                     )
                 else:
                     continue
@@ -1396,6 +1418,9 @@ class Canvas(
             p.setPen(pen)
             for _, _, text_pos, label_text in labels:
                 p.drawText(text_pos, label_text)
+
+            # ngochdm
+            p.restore()
 
         # Draw mouse coordinates
         if self.cross_line_show:
