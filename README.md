@@ -64,19 +64,20 @@ This repository is a customized clone of X-AnyLabeling v2.5.0.
   - Previous/next image navigation can jump by more than one image at a time.
 
 ![updates](updates/updates_20260629_1.png)
+![updates](updates/updates_20260629_2.png)
 
 ### June 24, 2026
 
 - Updated the Files dock default horizontal scroll position.
 - Adjusted layout heights for Image/Object Description and Shape dock areas.
 
-![updates](updates/updates_20260624.png)
+<!-- ![updates](updates/updates_20260624.png) -->
 
 ### June 23, 2026
 
 - Added and repositioned the zoom bar in the labeling UI.
 
-![updates](updates/updates_20260623.png)
+<!-- ![updates](updates/updates_20260623.png) -->
 
 
 <!-- MARK: 📝 Notes -->
