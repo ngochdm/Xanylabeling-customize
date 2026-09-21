@@ -22,10 +22,12 @@ __   _|___ \  | ___| / _ \
 # 🛠️ Customize X-AnyLabeling v2.5.0 🛠️
 
 This repository is a customized clone of X-AnyLabeling v2.5.0.
+- **Original Repo:** https://github.com/CVHub520/X-AnyLabeling/releases/tag/v2.5.0
+- Please read [README_Xanylabeling.md](README_Xanylabeling.md) for more detailed information.
 
-**Original Repo:** https://github.com/CVHub520/X-AnyLabeling/releases/tag/v2.5.0
-
-Please read [README_Xanylabeling.md](README_Xanylabeling.md) for more detailed information.
+**Purpose:**
+- Support for manual labeling and evaluating the annotations for long video length (~ 10 minutes).
+- Customize bbox visualization for frames containing a number of occluded small objects.
 
 
 <!-- MARK: ✨ Updates -->
