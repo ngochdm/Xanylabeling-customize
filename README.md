@@ -72,6 +72,8 @@ This repository is a customized clone of X-AnyLabeling v2.5.0.
 
 - Added and repositioned the zoom bar in the labeling UI.
 
+![updates](updates/updates_20260623.png)
+
 
 <!-- MARK: 📝 Notes -->
 
