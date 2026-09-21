@@ -3809,12 +3809,6 @@ class LabelingWidget(LabelDialog):
     def load_file(self, filename=None):  # noqa: C901
         """Load the specified file, or the last opened file if None."""
 
-        # MARK: ngochdm
-        self.set_bbox_thickness()
-        self.set_label_font_size()
-        # /ngochdm
-
-
         save_config(self._config)
 
         # For auto labeling, clear the previous marks
