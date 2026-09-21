@@ -38,6 +38,8 @@ This repository is a customized clone of X-AnyLabeling v2.5.0.
 
 - Added optional setting label font size.
 
+![updates](updates/updates_20260921.png)
+
 ### Sep 17, 2026
 
 - Added optional setting bounding box thickness.
