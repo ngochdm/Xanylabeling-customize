@@ -32,6 +32,10 @@ Please read [README_Xanylabeling.md](README_Xanylabeling.md) for more detailed i
 
 ## Feature Updates
 
+### Sep 21, 2026 
+
+- Added optional setting label font size.
+
 ### Sep 17, 2026
 
 - Added optional setting bounding box thickness.
