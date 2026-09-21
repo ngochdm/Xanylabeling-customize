@@ -42,6 +42,8 @@ This repository is a customized clone of X-AnyLabeling v2.5.0.
 
 - Added optional setting bounding box thickness.
 
+![updates](updates/updates_20260917.png)
+
 ### July 1, 2026
 
 - Added auto navigation controls in the Files dock.
