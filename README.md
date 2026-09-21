@@ -68,6 +68,8 @@ This repository is a customized clone of X-AnyLabeling v2.5.0.
 - Updated the Files dock default horizontal scroll position.
 - Adjusted layout heights for Image/Object Description and Shape dock areas.
 
+![updates](updates/updates_20260624.png)
+
 ### June 23, 2026
 
 - Added and repositioned the zoom bar in the labeling UI.
