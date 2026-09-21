@@ -301,6 +301,18 @@ class LabelingWidget(LabelDialog):
             double_click=self._config["canvas"]["double_click"],
             num_backups=self._config["canvas"]["num_backups"],
         )
+
+        # MARK: ngochdm
+        label_font_size = self._config.get("label_font_size")
+        if (
+            type(label_font_size) is not int
+            or not 1 <= label_font_size <= 72
+        ):
+            label_font_size = None
+        self._config["label_font_size"] = label_font_size
+        self.canvas.label_font_size = label_font_size
+        # /ngochdm
+
         self.canvas.zoom_request.connect(self.zoom_request)
 
         scroll_area = QScrollArea()
@@ -845,9 +857,18 @@ class LabelingWidget(LabelDialog):
         )
 
         self.bbox_thickness_action = QtWidgets.QWidgetAction(self)
+
+        # MARK: ngochdm
         self.bbox_thickness_action.setDefaultWidget(
-            self.bbox_thickness_widget
+            self.make_size_control(
+                self.tr("Box"), self.bbox_thickness_widget
+            )
         )
+        # self.bbox_thickness_action.setDefaultWidget(
+        #     self.bbox_thickness_widget
+        # )
+        # /ngochdm
+
         bbox_thickness_visible = self._config.get(
             "show_bbox_thickness", False
         )
@@ -862,7 +883,51 @@ class LabelingWidget(LabelDialog):
         )
         # /ngochdm
 
-        
+        # MARK: ngochdm
+        self.label_font_size_widget = QtWidgets.QLineEdit(self)
+        self.label_font_size_widget.setFixedWidth(43)
+        self.label_font_size_widget.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_font_size_widget.setPlaceholderText(self.tr("Auto"))
+        self.label_font_size_widget.setAccessibleName(
+            self.tr("Label text size")
+        )
+        self.label_font_size_widget.setToolTip(
+            self.tr(
+                "Label text size (1-72 points), fixed on screen while "
+                "zooming. Leave empty for automatic sizing."
+            )
+        )
+        self.label_font_size_widget.setStatusTip(
+            self.label_font_size_widget.toolTip()
+        )
+        self.label_font_size_widget.setText(
+            "" if self.canvas.label_font_size is None
+            else str(self.canvas.label_font_size)
+        )
+        self.label_font_size_widget.editingFinished.connect(
+            self.set_label_font_size
+        )
+
+        self.label_font_size_action = QtWidgets.QWidgetAction(self)
+        self.label_font_size_action.setDefaultWidget(
+            self.make_size_control(
+                self.tr("Label"), self.label_font_size_widget
+            )
+        )
+        label_font_size_visible = self._config.get(
+            "show_label_font_size", False
+        )
+        self.label_font_size_action.setVisible(label_font_size_visible)
+
+        show_label_font_size = action(
+            self.tr("Label Text Size"),
+            self.toggle_label_font_size,
+            tip=self.tr("Show or hide the label text size field"),
+            checkable=True,
+            checked=label_font_size_visible,
+        )
+        # /ngochdm
+
         self.zoom_widget.setWhatsThis(
             str(
                 self.tr(
@@ -1662,6 +1727,7 @@ class LabelingWidget(LabelDialog):
                 self.shape_dock.toggleViewAction(),
                 self.file_dock.toggleViewAction(),
                 show_bbox_thickness,        # MARK: ngochdm
+                show_label_font_size,       # MARK: ngochdm
                 None,
                 fill_drawing,
                 None,
@@ -1734,6 +1800,7 @@ class LabelingWidget(LabelDialog):
             loop_thru_labels,
             None,
             self.bbox_thickness_action,             # MARK: ngochdm
+            self.label_font_size_action,            # MARK: ngochdm
             zoom,
             fit_window,                             # MARK: ngochdm
             fit_width,
@@ -3572,6 +3639,55 @@ class LabelingWidget(LabelDialog):
         self.adjust_scale()
 
     # MARK: ngochdm
+    def make_size_control(self, caption, editor):
+        container = QtWidgets.QWidget(self)
+        container.setFixedWidth(43)
+
+        title = QtWidgets.QLabel(caption, container)
+        title.setAlignment(QtCore.Qt.AlignCenter)
+        title.setToolTip(editor.toolTip())
+        title.setBuddy(editor)
+        font = title.font()
+        font.setPointSize(8)
+        font.setBold(True)
+        title.setFont(font)
+
+        layout = QtWidgets.QVBoxLayout(container)
+        layout.setContentsMargins(0, 2, 0, 2)
+        layout.setSpacing(2)
+        layout.addWidget(title)
+        layout.addWidget(editor)
+        return container
+
+    def toggle_label_font_size(self, visible):
+        self._config["show_label_font_size"] = bool(visible)
+        self.label_font_size_action.setVisible(visible)
+
+    def set_label_font_size(self):
+        text = self.label_font_size_widget.text().strip()
+        previous_size = self._config.get("label_font_size")
+
+        if not text:
+            size = None
+        elif re.fullmatch(r"(?:[1-9]|[1-6][0-9]|7[0-2])", text):
+            size = int(text)
+        else:
+            self.label_font_size_widget.setText(
+                "" if previous_size is None else str(previous_size)
+            )
+            self.status(
+                self.tr(
+                    "Enter a whole number from 1 to 72, or leave empty."
+                ),
+                5000,
+            )
+            return
+
+        self.label_font_size_widget.setText(
+            "" if size is None else str(size)
+        )
+        self.set_canvas_params("label_font_size", size)
+
     def toggle_bbox_thickness(self, visible):
         self._config["show_bbox_thickness"] = bool(visible)
         self.bbox_thickness_action.setVisible(visible)
@@ -3693,7 +3809,14 @@ class LabelingWidget(LabelDialog):
     def load_file(self, filename=None):  # noqa: C901
         """Load the specified file, or the last opened file if None."""
 
+        # MARK: ngochdm
+        self.set_bbox_thickness()
+        self.set_label_font_size()
+        # /ngochdm
+
+
         save_config(self._config)
+
         # For auto labeling, clear the previous marks
         # and inform the next files to be annotated
         self.clear_auto_labeling_marks()
