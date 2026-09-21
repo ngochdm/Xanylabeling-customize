@@ -63,6 +63,8 @@ This repository is a customized clone of X-AnyLabeling v2.5.0.
   - `navigation_interval` was added to the config.
   - Previous/next image navigation can jump by more than one image at a time.
 
+![updates](updates/updates_20260629_1.png)
+
 ### June 24, 2026
 
 - Updated the Files dock default horizontal scroll position.
