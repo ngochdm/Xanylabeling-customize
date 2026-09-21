@@ -19,7 +19,7 @@ __   _|___ \  | ___| / _ \
 
 -->
 
-# Customize X-AnyLabeling v2.5.0
+# 🛠️ Customize X-AnyLabeling v2.5.0 🛠️
 
 This repository is a customized clone of X-AnyLabeling v2.5.0.
 
@@ -28,11 +28,11 @@ This repository is a customized clone of X-AnyLabeling v2.5.0.
 Please read [README_Xanylabeling.md](README_Xanylabeling.md) for more detailed information.
 
 
-<!-- MARK: Updates -->
+<!-- MARK: ✨ Updates -->
 
-## Feature Updates
+## ✨ Feature Updates
 
-### Sep 21, 2026 
+### 📅 Sep 21, 2026 
 
 - Added optional setting label font size.
 
@@ -71,8 +71,8 @@ Please read [README_Xanylabeling.md](README_Xanylabeling.md) for more detailed i
 - Added and repositioned the zoom bar in the labeling UI.
 
 
-<!-- MARK: Notes -->
+<!-- MARK: 📝 Notes -->
 
-## Notes
+## 📝 Notes
 
 - This README documents custom changes on top of upstream X-AnyLabeling v2.5.0.
