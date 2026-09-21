@@ -57,14 +57,15 @@ This repository is a customized clone of X-AnyLabeling v2.5.0.
 
 - Added `regenerate_icon_ngochdm.sh` for rebuilding updated icon resources.
 
+![updates](updates/updates_20260701.png)
+
 ### June 29, 2026
 
 - Added configurable image navigation interval.
   - `navigation_interval` was added to the config.
   - Previous/next image navigation can jump by more than one image at a time.
 
-![updates](updates/updates_20260629_1.png)
-![updates](updates/updates_20260629_2.png)
+![updates](updates/updates_20260629.png)
 
 ### June 24, 2026
 
