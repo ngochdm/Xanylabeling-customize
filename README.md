@@ -32,6 +32,10 @@ Please read [README_Xanylabeling.md](README_Xanylabeling.md) for more detailed i
 
 ## Feature Updates
 
+### Sep 17, 2026
+
+- Added optional setting bounding box thickness.
+
 ### July 1, 2026
 
 - Added auto navigation controls in the Files dock.
