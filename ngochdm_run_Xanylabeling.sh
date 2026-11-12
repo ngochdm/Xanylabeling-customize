@@ -1,5 +1,7 @@
-eval "$(conda shell.bash hook)"
+#!/usr/bin/env bash
+set -euo pipefail
 
+eval "$(conda shell.bash hook)"
 conda activate Xanylabeling
 
 cd /media/ngochdm/Projects/GITHUB/Xanylabeling-customize/
