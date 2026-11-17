@@ -8,6 +8,7 @@ import numpy as np
 import PIL.ExifTags
 import PIL.Image
 import PIL.ImageOps
+import PIL.ImageEnhance     # MARK: ngochdm
 
 from PyQt5 import QtGui
 
@@ -50,6 +51,17 @@ def pil_to_qimage(img):
         data, width, height, bytes_per_line, QtGui.QImage.Format_RGBA8888
     )
     return qimage
+
+
+# MARK: ngochdm
+def adjust_brightness_contrast(img, brightness=1.0, contrast=1.0):
+    """Adjust an original PIL image and return a detached QImage."""
+    if brightness != 1.0:
+        img = PIL.ImageEnhance.Brightness(img).enhance(brightness)
+    if contrast != 1.0:
+        img = PIL.ImageEnhance.Contrast(img).enhance(contrast)
+    return pil_to_qimage(img).copy()
+# </ngochdm>
 
 
 def img_arr_to_b64(img_arr):

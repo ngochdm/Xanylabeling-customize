@@ -144,8 +144,8 @@ shortcuts:
   show_labels: Ctrl+L
   show_linking: Ctrl+K
   show_bbox_thickness: true             # MARK: ngochdm
-  show_label_font_size: false           # MARK: ngochdm
-  label_font_size: null                 # MARK: ngochdm
+  show_label_font_size: false           # ngochdm
+  label_font_size: null                 # ngochdm
   union_selected_shapes: Ctrl+Shift+M
   toggle_auto_use_last_label: Ctrl+Y
   toggle_visibility_shapes: Ctrl+H
