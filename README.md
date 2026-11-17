@@ -34,7 +34,14 @@ This repository is a customized clone of X-AnyLabeling v2.5.0.
 
 ## ✨ Feature Updates
 
-### 📅 Sep 21, 2026 
+### 📅 Nov 17, 2026
+
+- Added brightness and contrast values to widget.
+
+![updates](updates/updates_20261116.png)
+![updates](updates/updates_20261117.png)
+
+### Sep 21, 2026 
 
 - Added optional setting label font size.
 

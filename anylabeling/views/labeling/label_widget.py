@@ -823,7 +823,7 @@ class LabelingWidget(LabelDialog):
             self.contrast_widget,
             self.contrast_action,
         ) = self._make_image_adjustment_control(
-            self.tr("Cont"), self.tr("Contrast")
+            self.tr("Cntrast"), self.tr("Contrast")
         )
         # </ngochdm>
 
