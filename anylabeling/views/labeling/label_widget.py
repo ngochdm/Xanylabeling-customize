@@ -40,6 +40,7 @@ from ...app_info import (
     __preferred_device__,
 )
 from . import utils
+from .utils.image import adjust_brightness_contrast     # MARK: ngochdm
 from ...config import get_config, save_config
 from .label_file import LabelFile, LabelFileError
 from .label_converter import LabelConverter
@@ -809,6 +810,22 @@ class LabelingWidget(LabelDialog):
         #     tip=self.tr("Zoom Level"),
         #     enabled=False,
         # )
+        # </ngochdm>
+
+        # MARK: ngochdm
+        (
+            self.brightness_widget,
+            self.brightness_action,
+        ) = self._make_image_adjustment_control(
+            self.tr("Bright"), self.tr("Brightness")
+        )
+        (
+            self.contrast_widget,
+            self.contrast_action,
+        ) = self._make_image_adjustment_control(
+            self.tr("Cont"), self.tr("Contrast")
+        )
+        # </ngochdm>
 
         # MARK: ngochdm
         navigation_interval_widget = QtWidgets.QSpinBox()
@@ -1586,6 +1603,8 @@ class LabelingWidget(LabelDialog):
                 create_line_strip_mode,
                 edit_mode,
                 brightness_contrast,
+                self.brightness_action,     # MARK: ngochdm
+                self.contrast_action,       # MARK: ngochdm
                 loop_thru_labels,
             ),
             on_shapes_present=(save_as, delete),
@@ -1787,23 +1806,25 @@ class LabelingWidget(LabelDialog):
             create_mode,
             self.actions.create_rectangle_mode,
             self.actions.create_rotation_mode,
-            self.actions.create_circle_mode,
+            # self.actions.create_circle_mode,      # ngochdm
             self.actions.create_line_mode,
-            self.actions.create_point_mode,
+            # self.actions.create_point_mode,       # ngochdm
             self.actions.create_line_strip_mode,
             None,
             edit_mode,
-            rotate_linestrip_left,                  # MARK: ngochdm
-            rotate_linestrip_right,                 # MARK: ngochdm
+            rotate_linestrip_left,                  # ngochdm
+            rotate_linestrip_right,                 # ngochdm
             delete,
             undo,
-            loop_thru_labels,
+            # loop_thru_labels,                     # ngochdm
             None,
-            self.bbox_thickness_action,             # MARK: ngochdm
-            self.label_font_size_action,            # MARK: ngochdm
+            self.bbox_thickness_action,             # ngochdm
+            self.label_font_size_action,            # ngochdm
             zoom,
-            fit_window,                             # MARK: ngochdm
+            fit_window,                             # ngochdm
             fit_width,
+            self.brightness_action,                 # ngochdm
+            self.contrast_action,                   # ngochdm
             toggle_auto_labeling_widget,
             run_all_images,
         )
@@ -2151,6 +2172,9 @@ class LabelingWidget(LabelDialog):
         self.label_file = None
         self.other_data = {}
         self.canvas.reset_state()
+        self.brightness_action.setEnabled(False)        # MARK: ngochdm
+        self.contrast_action.setEnabled(False)          # ngochdm
+        self._set_brightness_contrast_controls(50, 50)  # ngochdm
         self.label_filter_combobox.combo_box.clear()
 
     def reset_attribute(self, text):
@@ -3738,29 +3762,131 @@ class LabelingWidget(LabelDialog):
         setattr(self.canvas, key, value)
         self.canvas.update()
 
+    # MARK: ngochdm
+    def _make_image_adjustment_control(self, caption, name):
+        editor = QtWidgets.QDoubleSpinBox(self)
+        editor.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
+        editor.setRange(0.00, 3.00)
+        editor.setDecimals(2)
+        editor.setSingleStep(0.02)
+        editor.setValue(1.00)
+        editor.setFixedWidth(43)
+        editor.setKeyboardTracking(False)
+        editor.setAlignment(QtCore.Qt.AlignCenter)
+        editor.setAccessibleName(name)
+        editor.setToolTip(
+            self.tr(
+                "{} factor: 0.00-3.00; 1.00 is normal. "
+                "Values snap to 0.02 steps."
+            ).format(name)
+        )
+        editor.setStatusTip(editor.toolTip())
+
+        font = editor.font()
+        font.setPointSize(7)
+        editor.setFont(font)
+
+        control_action = QtWidgets.QWidgetAction(self)
+        control_action.setDefaultWidget(
+            self.make_size_control(caption, editor)
+        )
+        control_action.setEnabled(False)
+        editor.valueChanged.connect(
+            self._on_brightness_contrast_controls_changed
+        )
+        return editor, control_action
+
+    def _set_brightness_contrast_controls(self, brightness, contrast):
+        values = tuple(
+            50 if value is None else max(0, min(150, int(round(value))))
+            for value in (brightness, contrast)
+        )
+        for editor, value in zip(
+            (self.brightness_widget, self.contrast_widget), values
+        ):
+            with QtCore.QSignalBlocker(editor):
+                editor.setValue(value / 50.0)
+        return values
+
+    def _apply_brightness_contrast_values(self, brightness, contrast):
+        brightness, contrast = self._set_brightness_contrast_controls(
+            brightness, contrast
+        )
+        if not self.filename or not self.image_data:
+            return
+
+        self.brightness_contrast_values[self.filename] = (
+            brightness, contrast
+        )
+        if (brightness, contrast) == (50, 50):
+            qimage = self.image
+        else:
+            qimage = adjust_brightness_contrast(
+                utils.img_data_to_pil(self.image_data),
+                brightness / 50.0,
+                contrast / 50.0,
+            )
+        self.on_new_brightness_contrast(qimage)
+
+    def _on_brightness_contrast_controls_changed(self, _value):
+        if not self.filename or not self.image_data:
+            return
+        self._apply_brightness_contrast_values(
+            round(self.brightness_widget.value() * 50),
+            round(self.contrast_widget.value() * 50),
+        )
+    # </ngochdm>
+
     def on_new_brightness_contrast(self, qimage):
         self.canvas.load_pixmap(
             QtGui.QPixmap.fromImage(qimage), clear_shapes=False
         )
 
-    def brightness_contrast(self, _):
+    # def brightness_contrast(self, _):
+    #     dialog = BrightnessContrastDialog(
+    #         utils.img_data_to_pil(self.image_data),
+    #         self.on_new_brightness_contrast,
+    #         parent=self,
+    #     )
+    #     brightness, contrast = self.brightness_contrast_values.get(
+    #         self.filename, (None, None)
+    #     )
+    #     if brightness is not None:
+    #         dialog.slider_brightness.setValue(brightness)
+    #     if contrast is not None:
+    #         dialog.slider_contrast.setValue(contrast)
+    #     dialog.exec_()
+
+    #     brightness = dialog.slider_brightness.value()
+    #     contrast = dialog.slider_contrast.value()
+    #     self.brightness_contrast_values[self.filename] = (brightness, contrast)
+
+    def brightness_contrast(self, _=False):
+        if not self.filename or not self.image_data:
+            return
+
+        def preview(qimage):
+            values = self._set_brightness_contrast_controls(
+                dialog.slider_brightness.value(),
+                dialog.slider_contrast.value(),
+            )
+            self.brightness_contrast_values[self.filename] = values
+            self.on_new_brightness_contrast(qimage)
+
         dialog = BrightnessContrastDialog(
             utils.img_data_to_pil(self.image_data),
-            self.on_new_brightness_contrast,
+            preview,
             parent=self,
         )
-        brightness, contrast = self.brightness_contrast_values.get(
-            self.filename, (None, None)
+        dialog.set_values(
+            *self.brightness_contrast_values.get(
+                self.filename, (50, 50)
+            ),
+            apply=False,
         )
-        if brightness is not None:
-            dialog.slider_brightness.setValue(brightness)
-        if contrast is not None:
-            dialog.slider_contrast.setValue(contrast)
         dialog.exec_()
-
-        brightness = dialog.slider_brightness.value()
-        contrast = dialog.slider_contrast.value()
-        self.brightness_contrast_values[self.filename] = (brightness, contrast)
+        dialog.deleteLater()
+    # </ngochdm>
 
     def hide_selected_polygons(self):
         for index, item in enumerate(self.label_list):
@@ -3957,12 +4083,35 @@ class LabelingWidget(LabelDialog):
                     self.set_scroll(
                         orientation, self.scroll_values[orientation][self.filename],
                     )
-        # set brightness contrast values
-        dialog = BrightnessContrastDialog(
-            utils.img_data_to_pil(self.image_data),
-            self.on_new_brightness_contrast,
-            parent=self,
-        )
+
+        # MARK: ngochdm
+        # dialog = BrightnessContrastDialog(
+        #     utils.img_data_to_pil(self.image_data),
+        #     self.on_new_brightness_contrast,
+        #     parent=self,
+        # )
+        # brightness, contrast = self.brightness_contrast_values.get(
+        #     self.filename, (None, None)
+        # )
+        # if self._config["keep_prev_brightness"] and self.recent_files:
+        #     brightness, _ = self.brightness_contrast_values.get(
+        #         self.recent_files[0], (None, None)
+        #     )
+        # if self._config["keep_prev_contrast"] and self.recent_files:
+        #     _, contrast = self.brightness_contrast_values.get(
+        #         self.recent_files[0], (None, None)
+        #     )
+        # if brightness is not None:
+        #     dialog.slider_brightness.setValue(brightness)
+        # if contrast is not None:
+        #     dialog.slider_contrast.setValue(contrast)
+        # self.brightness_contrast_values[self.filename] = (brightness, contrast)
+        # if brightness is not None or contrast is not None:
+        #     dialog.on_new_value()
+        # </ngochdm>
+
+        # MARK: ngochdm
+        # Restore brightness and contrast.
         brightness, contrast = self.brightness_contrast_values.get(
             self.filename, (None, None)
         )
@@ -3974,13 +4123,9 @@ class LabelingWidget(LabelDialog):
             _, contrast = self.brightness_contrast_values.get(
                 self.recent_files[0], (None, None)
             )
-        if brightness is not None:
-            dialog.slider_brightness.setValue(brightness)
-        if contrast is not None:
-            dialog.slider_contrast.setValue(contrast)
-        self.brightness_contrast_values[self.filename] = (brightness, contrast)
-        if brightness is not None or contrast is not None:
-            dialog.on_new_value()
+        self._apply_brightness_contrast_values(brightness, contrast)
+        # </ngochdm>
+        
         self.paint_canvas()
         self.add_recent_file(self.filename)
         self.toggle_actions(True)
