@@ -1,11 +1,12 @@
 """This module defines brightness/contrast dialog"""
 
 import PIL.Image
-import PIL.ImageEnhance
+# import PIL.ImageEnhance       # MARK: ngochdm
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSignalBlocker # ngochdm
 
-from ..utils.image import pil_to_qimage
+# from ..utils.image import pil_to_qimage
+from ..utils.image import adjust_brightness_contrast
 
 
 class BrightnessContrastDialog(QtWidgets.QDialog):
@@ -82,25 +83,59 @@ class BrightnessContrastDialog(QtWidgets.QDialog):
         self.contrast_label.setText(f"{value / 50:.2f}")
         self.on_new_value()
 
+    # MARK: ngochdm
+    # def on_new_value(self):
+    #     """On new value event"""
+    #     brightness = self.slider_brightness.value() / 50.0
+    #     contrast = self.slider_contrast.value() / 50.0
+
+    #     img = self.img
+    #     if brightness != 1:
+    #         img = PIL.ImageEnhance.Brightness(img).enhance(brightness)
+    #     if contrast != 1:
+    #         img = PIL.ImageEnhance.Contrast(img).enhance(contrast)
+
+    #     qimage = pil_to_qimage(img)
+    #     self.callback(qimage)
+
+    # def reset_values(self):
+    #     """Reset sliders to default values"""
+    #     self.slider_brightness.setValue(50)
+    #     self.slider_contrast.setValue(50)
+    #     self.on_new_value()
+
+    def set_values(self, brightness=50, contrast=50, apply=True):
+        """Set both slider values without intermediate previews."""
+        brightness = 50 if brightness is None else int(brightness)
+        contrast = 50 if contrast is None else int(contrast)
+
+        with QSignalBlocker(self.slider_brightness):
+            self.slider_brightness.setValue(brightness)
+        with QSignalBlocker(self.slider_contrast):
+            self.slider_contrast.setValue(contrast)
+
+        self.brightness_label.setText(
+            f"{self.slider_brightness.value() / 50:.2f}"
+        )
+        self.contrast_label.setText(
+            f"{self.slider_contrast.value() / 50:.2f}"
+        )
+        if apply:
+            self.on_new_value()
+
     def on_new_value(self):
-        """On new value event"""
-        brightness = self.slider_brightness.value() / 50.0
-        contrast = self.slider_contrast.value() / 50.0
-
-        img = self.img
-        if brightness != 1:
-            img = PIL.ImageEnhance.Brightness(img).enhance(brightness)
-        if contrast != 1:
-            img = PIL.ImageEnhance.Contrast(img).enhance(contrast)
-
-        qimage = pil_to_qimage(img)
+        """Preview brightness and contrast using the original image."""
+        qimage = adjust_brightness_contrast(
+            self.img,
+            self.slider_brightness.value() / 50.0,
+            self.slider_contrast.value() / 50.0,
+        )
         self.callback(qimage)
 
     def reset_values(self):
-        """Reset sliders to default values"""
-        self.slider_brightness.setValue(50)
-        self.slider_contrast.setValue(50)
-        self.on_new_value()
+        """Reset both sliders and preview once."""
+        self.set_values(50, 50)
+    # </ngochdm>
 
     def confirm_values(self):
         """Confirm the current values and close the dialog"""
